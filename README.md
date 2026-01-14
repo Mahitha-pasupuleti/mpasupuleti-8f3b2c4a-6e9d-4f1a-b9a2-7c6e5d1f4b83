@@ -290,7 +290,6 @@ Authorization: Bearer <token>
 
 ## 6. Role Delegation
 
-
 | Role   | Can Create Task       | Can Read Tasks           | Can Update Task         | Can Delete Task         |
 | ------ | --------------------- | ------------------------ | ----------------------- | ----------------------- |
 | OWNER  | Only in **their org** | All tasks (across orgs?) | Any task (all orgs)     | Any task (all orgs)     |
@@ -299,7 +298,23 @@ Authorization: Bearer <token>
 
 ---
 
-## 7. Future Considerations
+## 7. Sample Users
+
+```javascript
+const users = [
+    { name: 'Alice', email: 'alice@example.com', role: Role.OWNER, orgId: 'org1' },
+    { name: 'Bob', email: 'bob@example.com', role: Role.ADMIN, orgId: 'org1' },
+    { name: 'Charlie', email: 'charlie@example.com', role: Role.VIEWER, orgId: 'org1' },
+    { name: 'Dave', email: 'dave@example.com', role: Role.OWNER, orgId: 'org2' },
+    { name: 'Eve', email: 'eve@example.com', role: Role.ADMIN, orgId: 'org2' },
+    { name: 'Frank', email: 'frank@example.com', role: Role.VIEWER, orgId: 'org2' },
+    { name: 'Grace', email: 'grace@example.com', role: Role.OWNER, orgId: 'org3' },
+    { name: 'Heidi', email: 'heidi@example.com', role: Role.VIEWER, orgId: 'org3' },
+  ];
+```
+---
+
+## 8. Future Considerations
 
 ### Advanced Role Delegation
 
@@ -322,7 +337,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 8. Summary
+## 9. Summary
 
 This monorepo architecture ensures:
 
