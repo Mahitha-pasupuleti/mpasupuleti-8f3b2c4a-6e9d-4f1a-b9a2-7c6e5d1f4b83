@@ -3,7 +3,13 @@
 This repository is an **NX-based monorepo** containing a backend API and a frontend dashboard application, with shared libraries for data contracts and domain models.
 
 ---
+## 🎬 Demo Video
 
+Check out the live demo of the project below! Click the thumbnail to watch it on YouTube.
+
+[![Watch the Demo](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=q_APvyN7VHY)
+
+---
 ## 1. Setup Instructions
 
 ### Prerequisites
