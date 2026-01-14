@@ -1,4 +1,4 @@
-# NX Monorepo – Backend & Dashboard
+# Task Management Dashboard
 
 This repository is an **NX-based monorepo** containing a backend API and a frontend dashboard application, with shared libraries for data contracts and domain models.
 
@@ -288,7 +288,18 @@ Authorization: Bearer <token>
 ```
 ---
 
-## 6. Future Considerations
+## 6. Role Delegation
+
+
+| Role   | Can Create Task       | Can Read Tasks           | Can Update Task         | Can Delete Task         |
+| ------ | --------------------- | ------------------------ | ----------------------- | ----------------------- |
+| OWNER  | Only in **their org** | All tasks (across orgs?) | Any task (all orgs)     | Any task (all orgs)     |
+| ADMIN  | Only in **their org** | Only tasks in their org  | Only tasks in their org | Only tasks in their org |
+| VIEWER | **Cannot create**     | Only tasks in their org  | Cannot update           | Cannot delete           |
+
+---
+
+## 7. Future Considerations
 
 ### Advanced Role Delegation
 
@@ -311,7 +322,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 7. Summary
+## 8. Summary
 
 This monorepo architecture ensures:
 
