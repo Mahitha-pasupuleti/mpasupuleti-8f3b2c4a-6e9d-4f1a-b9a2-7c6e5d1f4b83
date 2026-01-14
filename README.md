@@ -1,91 +1,347 @@
-# Ngtestwrk
+# Task Management Dashboard
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+This repository is an **NX-based monorepo** containing a backend API and a frontend dashboard application, with shared libraries for data contracts and domain models.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+---
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 1. Setup Instructions
 
-## Generate a library
+### Prerequisites
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+* Node.js >= 18
+* npm or yarn
+* NX CLI (optional)
+* PostgreSQL / MongoDB (based on your DB choice)
+
+```bash
+npm install -g nx
 ```
 
-## Run tasks
+### Install Dependencies
 
-To build the library use:
+From the repository root:
 
-```sh
-npx nx build pkg1
+```bash
+npm install
 ```
 
-To run any task with Nx use:
+---
 
-```sh
-npx nx <target> <project-name>
+### Running the Backend (API)
+
+```bash
+npx nx serve api
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+Backend will start at:
 
 ```
-npx nx release
+http://localhost:3000
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+---
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Running the Frontend (Dashboard)
 
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
+```bash
+npx nx serve dashboard
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+Frontend will start at:
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
+```
+http://localhost:4200
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
+## 2. Architecture Overview
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+### NX Monorepo Layout
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```
+apps/
+  api/         → Backend (NestJS)
+  dashboard/   → Frontend (Angular)
 
-## Useful links
+libs/
+  data/        → Shared DTOs, enums, interfaces
+```
 
-Learn more:
+### Why NX?
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+* Enforced module boundaries
+* Shared libraries without duplication
+* Independent builds & caching
+* Scales well for large teams
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
+
+### Shared Libraries
+
+#### `libs/data`
+
+Single source of truth for:
+
+* DTOs (request/response contracts)
+* Enums (roles, statuses)
+* Interfaces (User, Task, Organization)
+
+Used by both:
+
+* `apps/api`
+* `apps/dashboard`
+
+This ensures **type safety across frontend and backend**.
+
+---
+
+## 3. Data Model Explanation
+
+### Core Entities
+
+* **User**
+* **Organization**
+* **Role**
+* **Permission**
+* **Task**
+
+### Relationships
+
+* A **User** belongs to one **Organization**
+* An **Organization** has many **Users**
+* A **User** has one **Role** per organization
+* A **Role** maps to multiple **Permissions**
+* **Tasks** are scoped to an organization
+
+### ERD (Conceptual)
+
+```
+User ──── belongs to ──── Organization
+ │                               │
+ │ has                           │ has
+ ▼                               ▼
+ Role ──── maps to ──── Permission
+```
+
+---
+
+## 4. Access Control Implementation
+
+### Roles
+
+* `OWNER`
+* `ADMIN`
+* `VIEWER`
+
+### Permissions (examples)
+
+* `TASK_CREATE`
+* `TASK_READ`
+* `TASK_UPDATE`
+* `TASK_DELETE`
+
+### Organization Hierarchy
+
+* **OWNER**: Full control, manages org & roles
+* **ADMIN**: Manage tasks within the org
+* **VIEWER**: Read-only access of tasks
+
+---
+
+### JWT Authentication Flow
+
+1. User logs in with credentials
+2. Backend issues a **JWT** containing:
+
+   * `userId`
+   * `orgId`
+   * `role`
+3. JWT is sent in `Authorization` header
+
+```http
+Authorization: Bearer <token>
+```
+
+4. Guards validate:
+
+   * Token authenticity
+   * User role
+   * Required permissions
+
+---
+
+## 5. API Documentation
+
+### Auth
+
+#### POST `/api/auth/login`
+
+**Request**
+
+```json
+{
+  "email": "user@example.com",
+}
+```
+
+**Response**
+
+```json
+{
+  "accessToken": "jwt-token",
+}
+```
+
+---
+
+### Tasks
+
+#### GET `/api/tasks`
+
+**Response**
+
+```json
+[
+  {
+    "id": "uuid",
+    "title": "Sample Task",
+    "status": "todo",
+    "description": "Sample Task",
+    "owner": "owner name",
+    "category": "Work"
+  }
+]
+```
+
+---
+
+#### POST `/api/tasks`
+
+**Request**
+
+```json
+{
+  "title": "New Task",
+  "description": "Task description",
+  "category": "Work",
+  "status": "todo"
+}
+```
+---
+
+#### PUT `/api/tasks/:id`
+
+**Request**
+
+```json
+{
+  "title": "New Task",
+}
+```
+**Response**
+
+```json
+"Task Updated Successfully"
+```
+---
+
+#### DELETE `/api/tasks/:id`
+
+**Response**
+
+```json
+"Task Deleted Successfully"
+```
+---
+
+#### POST `/api/auth/register`
+
+**Request**
+
+```json
+{
+  "name": "sample",
+  "email": "sample@example.com",
+  "role": "VIEWER",
+  "orgId": "sample"
+}
+```
+---
+
+#### GET `/api/tasks/by-category?category=Personal`
+
+**Response**
+
+```json
+[
+    {
+        "id": "91627c21-b751-4922-99ce-d9b3328e9b22",
+        "title": "Draft Document",
+        "description": "Do by Monday",
+        "category": "Personal",
+        "status": "todo",
+        "ownerId": "4c8616b3-620f-4038-9547-0cd3c771bdcb",
+        "orgId": "org1"
+    }
+]
+```
+---
+
+## 6. Role Delegation
+
+| Role   | Can Create Task       | Can Read Tasks           | Can Update Task         | Can Delete Task         |
+| ------ | --------------------- | ------------------------ | ----------------------- | ----------------------- |
+| OWNER  | Only in **their org** | All tasks (across orgs?) | Any task (all orgs)     | Any task (all orgs)     |
+| ADMIN  | Only in **their org** | Only tasks in their org  | Only tasks in their org | Only tasks in their org |
+| VIEWER | **Cannot create**     | Only tasks in their org  | Cannot update           | Cannot delete           |
+
+---
+
+## 7. Sample Users
+
+```javascript
+const users = [
+    { name: 'Alice', email: 'alice@example.com', role: Role.OWNER, orgId: 'org1' },
+    { name: 'Bob', email: 'bob@example.com', role: Role.ADMIN, orgId: 'org1' },
+    { name: 'Charlie', email: 'charlie@example.com', role: Role.VIEWER, orgId: 'org1' },
+    { name: 'Dave', email: 'dave@example.com', role: Role.OWNER, orgId: 'org2' },
+    { name: 'Eve', email: 'eve@example.com', role: Role.ADMIN, orgId: 'org2' },
+    { name: 'Frank', email: 'frank@example.com', role: Role.VIEWER, orgId: 'org2' },
+    { name: 'Grace', email: 'grace@example.com', role: Role.OWNER, orgId: 'org3' },
+    { name: 'Heidi', email: 'heidi@example.com', role: Role.VIEWER, orgId: 'org3' },
+  ];
+```
+---
+
+## 8. Future Considerations
+
+### Advanced Role Delegation
+
+* Custom roles per organization
+* Temporary permissions
+* Role inheritance
+
+### Production-Ready Security
+
+* JWT refresh tokens
+* Token rotation
+* CSRF protection
+* Secure cookies
+
+### RBAC Performance & Scaling
+
+* Permission caching (Redis)
+* Policy-based access control
+* Database indexing on role/permission tables
+
+---
+
+## 9. Summary
+
+This monorepo architecture ensures:
+
+* Clear separation of concerns
+* Shared contracts between frontend and backend
+* Scalable access control model
+* Production-ready foundation
