@@ -2,19 +2,23 @@
   "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
+    /* FIX: This must be present if 'paths' is used */
+    "baseUrl": ".", 
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
+    "module": "node16",
+    "target": "es2022",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2022", "dom"],
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@ngtestwrk/data": ["libs/data/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

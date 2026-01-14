@@ -1,0 +1,36 @@
+<form (ngSubmit)="register()">
+  <h2>Register</h2>
+
+  <input
+    placeholder="Name"
+    [(ngModel)]="name"
+    name="name"
+    required
+  />
+
+  <input
+    placeholder="Email"
+    [(ngModel)]="email"
+    name="email"
+    type="email"
+    required
+  />
+
+  <input
+    placeholder="Organization ID"
+    [(ngModel)]="orgId"
+    name="orgId"
+    required
+  />
+
+  <select [(ngModel)]="role" name="role">
+    <option value="VIEWER">Viewer</option>
+    <option value="ADMIN">Admin</option>
+    <option value="OWNER">Owner</option>
+  </select>
+
+  <button type="submit">Register</button>
+
+  <p *ngIf="error">{{ error }}</p>
+  <p *ngIf="success" style="color: green">{{ success }}</p>
+</form>
